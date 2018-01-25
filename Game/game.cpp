@@ -23,7 +23,7 @@ Game::~Game()
     delete ui;
 }
 
-void Game::paintEvent(QPaintEvent* e)
+void Game::paintEvent(QPaintEvent* event)
 {
     QPainter painter(this);
 
@@ -34,33 +34,94 @@ void Game::paintEvent(QPaintEvent* e)
     _player->paint(painter);
 }
 
-void Game::mouseMoveEvent(QMouseEvent* e)
+void Game::mouseMoveEvent(QMouseEvent* event)
 {
 
 }
 
-void Game::keyPressEvent(QKeyEvent* e)
+void Game::keyPressEvent(QKeyEvent* event)
 {
-    if (e->key() == Qt::Key_W)
+    switch (event->key())
+    {
+    case Qt::Key_W:
+        _keyUp = true;
+        break;
+
+    case Qt::Key_A:
+        _keyLeft = true;
+        break;
+
+    case Qt::Key_S:
+        _keyDown = true;
+        break;
+
+    case Qt::Key_D:
+        _keyRight = true;
+        break;
+    }
+}
+
+void Game::keyReleaseEvent(QKeyEvent* event)
+{
+    if (!event->isAutoRepeat())
+    {
+        switch (event->key())
+        {
+        case Qt::Key_W:
+            _keyUp = false;
+            break;
+
+        case Qt::Key_A:
+            _keyLeft = false;
+            break;
+
+        case Qt::Key_S:
+            _keyDown = false;
+            break;
+
+        case Qt::Key_D:
+            _keyRight = false;
+            break;
+        }
+    }
+}
+
+void Game::movePlayer()
+{
+    if (_keyUp && _keyLeft)
     {
         _player->setY(_player->getY() - _player->getVel());
-    }
-    else if (e->key() == Qt::Key_A)
-    {
         _player->setX(_player->getX() - _player->getVel());
     }
-    else if (e->key() == Qt::Key_S)
+    else if (_keyUp && _keyRight)
     {
-        _player->setY(_player->getY() + _player->getVel());
-    }
-    else if (e->key() == Qt::Key_D)
-    {
+        _player->setY(_player->getY() - _player->getVel());
         _player->setX(_player->getX() + _player->getVel());
     }
+    else if (_keyDown && _keyLeft)
+    {
+        _player->setY(_player->getY() + _player->getVel());
+        _player->setX(_player->getX() - _player->getVel());
+    }
+    else if (_keyDown && _keyRight)
+    {
+        _player->setY(_player->getY() + _player->getVel());
+        _player->setX(_player->getX() + _player->getVel());
+    }
+    else if (_keyUp)
+        _player->setY(_player->getY() - _player->getVel());
+    else if (_keyLeft)
+        _player->setX(_player->getX() - _player->getVel());
+    else if (_keyDown)
+        _player->setY(_player->getY() + _player->getVel());
+    else if (_keyRight)
+        _player->setX(_player->getX() + _player->getVel());
 }
 
 /* SLOTS FUNCTIONS */
+/* Main game updater */
 void Game::update()
 {
+    movePlayer();
     repaint();
 }

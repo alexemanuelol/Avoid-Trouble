@@ -22,15 +22,23 @@ public:
     explicit Game(QWidget *parent = 0);
     ~Game();
 
-    void paintEvent(QPaintEvent * e);
-    void mouseMoveEvent(QMouseEvent* e);
-    void keyPressEvent(QKeyEvent* e);
+    void paintEvent(QPaintEvent * event);
+    void mouseMoveEvent(QMouseEvent* event);
+    void keyPressEvent(QKeyEvent* event);
+    void keyReleaseEvent(QKeyEvent* event);
+
+    void movePlayer();
 
 private slots:
     void update();
 
 private:
     Ui::Game *ui;
+
+    bool _keyUp = false;
+    bool _keyLeft = false;
+    bool _keyDown = false;
+    bool _keyRight = false;
 
     QTimer* _gameTimer;
 

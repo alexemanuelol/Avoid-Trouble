@@ -43,6 +43,9 @@ private:
     QTimer* _gameTimer;
 
     Player* _player;
+
+    QRect* _victoryDoor;
+    QRect* _safeZone;
 };
 
 #endif // GAME_H

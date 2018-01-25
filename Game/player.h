@@ -12,7 +12,6 @@ public:
     Player(int x, int y, int velocity);
     ~Player();
 
-    void update();
     void paint(QPainter & painter) const;
 
     void setX(int x) { _x = x; }

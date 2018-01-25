@@ -13,11 +13,6 @@ Player::~Player()
     delete _body;
 }
 
-void Player::update()
-{
-
-}
-
 void Player::paint(QPainter & painter) const
 {
     painter.fillRect(_x, _y, PLAYER_WIDTH, PLAYER_HEIGHT, Qt::white);

@@ -9,8 +9,18 @@ Game::Game(QWidget *parent) : QMainWindow(parent), ui(new Ui::Game)
     setFixedWidth(WINDOW_WIDTH);
     setFixedHeight(WINDOW_HEIGHT);
 
+    /* Create the victory door */
+    _victoryDoor = new QRect(WINDOW_WIDTH - VICTORY_DOOR_WIDTH,
+                             WINDOW_HEIGHT/2 - VICTORY_DOOR_HEIGHT/2,
+                             VICTORY_DOOR_WIDTH,
+                             VICTORY_DOOR_HEIGHT);
+
+    /* Create the safe zone */
+    _safeZone = new QRect(0, WINDOW_HEIGHT/2 - SAFE_ZONE_HEIGHT/2,
+                          SAFE_ZONE_WIDTH, SAFE_ZONE_HEIGHT);
+
     /* Create the player */
-    _player = new Player(50, 290, PLAYER_VELOCITY);
+    _player = new Player(SAFE_ZONE_WIDTH/2-PLAYER_WIDTH/2, WINDOW_HEIGHT/2-PLAYER_HEIGHT/2, PLAYER_VELOCITY);
 
     /* Main game timer */
     _gameTimer = new QTimer(this);
@@ -31,6 +41,12 @@ void Game::paintEvent(QPaintEvent* event)
 
     /* Paint the background */
     painter.fillRect(0, 0, WINDOW_WIDTH, WINDOW_HEIGHT, Qt::black);
+
+    /* Paint the victory door */
+    painter.fillRect(*_victoryDoor,Qt::green);
+
+    /* Paint the safe zone */
+    painter.fillRect(*_safeZone, Qt::gray);
 
     /* Paint the player */
     _player->paint(painter);

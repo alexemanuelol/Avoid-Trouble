@@ -20,7 +20,8 @@ Game::Game(QWidget *parent) : QMainWindow(parent), ui(new Ui::Game)
                           SAFE_ZONE_WIDTH, SAFE_ZONE_HEIGHT);
 
     /* Create the player */
-    _player = new Player(SAFE_ZONE_WIDTH/2-PLAYER_WIDTH/2, WINDOW_HEIGHT/2-PLAYER_HEIGHT/2, PLAYER_VELOCITY);
+    _player = new Player(SAFE_ZONE_WIDTH/2-PLAYER_WIDTH/2,
+                         WINDOW_HEIGHT/2-PLAYER_HEIGHT/2, PLAYER_VELOCITY);
 
     /* Main game timer */
     _gameTimer = new QTimer(this);
@@ -50,6 +51,13 @@ void Game::paintEvent(QPaintEvent* event)
 
     /* Paint the player */
     _player->paint(painter);
+
+    /* Paint stage number */
+    painter.setFont(QFont("Arial", 16, QFont::Bold));
+    QPen pen(Qt::white);
+    painter.setPen(pen);
+    painter.drawText(WINDOW_WIDTH/2 - 65, 25, QString("Stage: "));
+    painter.drawText(WINDOW_WIDTH/2 + 20, 25, QString::number(stage));
 }
 
 void Game::mouseMoveEvent(QMouseEvent* event)
@@ -142,6 +150,13 @@ void Game::movePlayer()
         _player->setY(_player->getY() + _player->getVel());
     else if (_keyRight && _player->getX() < (WINDOW_WIDTH - PLAYER_WIDTH))
         _player->setX(_player->getX() + _player->getVel());
+
+    if (_victoryDoor->contains(QPoint(_player->getX() + PLAYER_WIDTH/2, _player->getY() + PLAYER_HEIGHT/2)))
+    {
+        _player->setX(SAFE_ZONE_WIDTH/2-PLAYER_WIDTH/2);
+        _player->setY(WINDOW_HEIGHT/2-PLAYER_HEIGHT/2);
+        stage++;
+    }
 }
 
 /* SLOTS FUNCTIONS */

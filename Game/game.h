@@ -35,6 +35,8 @@ private slots:
 private:
     Ui::Game *ui;
 
+    int stage = 1;
+
     bool _keyUp = false;
     bool _keyLeft = false;
     bool _keyDown = false;

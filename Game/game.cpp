@@ -1,9 +1,13 @@
 #include "game.h"
 #include "ui_game.h"
 
+#include <iostream>
+
 Game::Game(QWidget *parent) : QMainWindow(parent), ui(new Ui::Game)
 {
     ui->setupUi(this);
+
+    srand(time(NULL));
 
     /* Set the Game window to a fixed size */
     setFixedWidth(WINDOW_WIDTH);
@@ -18,6 +22,9 @@ Game::Game(QWidget *parent) : QMainWindow(parent), ui(new Ui::Game)
     /* Create the safe zone */
     _safeZone = new QRect(0, WINDOW_HEIGHT/2 - SAFE_ZONE_HEIGHT/2,
                           SAFE_ZONE_WIDTH, SAFE_ZONE_HEIGHT);
+
+    /* Create the obstacle array */
+    _obstacles = new Obstacle[_obstacleSize];
 
     /* Create the player */
     _player = new Player(SAFE_ZONE_WIDTH/2-PLAYER_WIDTH/2,
@@ -40,24 +47,42 @@ void Game::paintEvent(QPaintEvent* event)
 {
     QPainter painter(this);
 
-    /* Paint the background */
-    painter.fillRect(0, 0, WINDOW_WIDTH, WINDOW_HEIGHT, Qt::black);
+    if (_gameActive)
+    {
+        /* Paint the background */
+        painter.fillRect(0, 0, WINDOW_WIDTH, WINDOW_HEIGHT, Qt::black);
 
-    /* Paint the victory door */
-    painter.fillRect(*_victoryDoor,Qt::green);
+        /* Paint the obstacles */
+        for (int i = 0; i < _obstacleSize; i++)
+            _obstacles[i].paint(painter);
 
-    /* Paint the safe zone */
-    painter.fillRect(*_safeZone, Qt::gray);
+        /* Paint the victory door */
+        painter.fillRect(*_victoryDoor,Qt::green);
 
-    /* Paint the player */
-    _player->paint(painter);
+        /* Paint the safe zone */
+        painter.fillRect(*_safeZone, Qt::gray);
 
-    /* Paint stage number */
-    painter.setFont(QFont("Arial", 16, QFont::Bold));
-    QPen pen(Qt::white);
-    painter.setPen(pen);
-    painter.drawText(WINDOW_WIDTH/2 - 65, 25, QString("Stage: "));
-    painter.drawText(WINDOW_WIDTH/2 + 20, 25, QString::number(stage));
+        /* Paint the player */
+        _player->paint(painter);
+
+        /* Paint stage number */
+        painter.setFont(QFont("Arial", 16, QFont::Bold));
+        QPen pen(Qt::white);
+        painter.setPen(pen);
+        painter.drawText(WINDOW_WIDTH/2 - 65, 25, QString("Stage: "));
+        painter.drawText(WINDOW_WIDTH/2 + 20, 25, QString::number(_stage));
+    }
+    else
+    {
+        /* Paint the background */
+        painter.fillRect(0, 0, WINDOW_WIDTH, WINDOW_HEIGHT, Qt::black);
+
+        /* Paint Game Over */
+        painter.setFont(QFont("Arial", 40, QFont::Bold));
+        QPen pen(Qt::white);
+        painter.setPen(pen);
+        painter.drawText(WINDOW_WIDTH/2 - 170, WINDOW_HEIGHT/2, QString("GAME OVER!"));
+    }
 }
 
 void Game::mouseMoveEvent(QMouseEvent* event)
@@ -67,6 +92,22 @@ void Game::mouseMoveEvent(QMouseEvent* event)
 
 void Game::keyPressEvent(QKeyEvent* event)
 {
+    if (event->key() == Qt::Key_R)
+    {
+        // Restart
+        _stage = 1;
+        _obstacleSize = 0;
+        newStage();
+        _player->setX(SAFE_ZONE_WIDTH/2-PLAYER_WIDTH/2);
+        _player->setY(WINDOW_HEIGHT/2-PLAYER_HEIGHT/2);
+        _gameActive = true;
+    }
+
+    if (event->key() == Qt::Key_P)
+    {
+        // Pause
+    }
+
     switch (event->key())
     {
     case Qt::Key_W:
@@ -155,14 +196,49 @@ void Game::movePlayer()
     {
         _player->setX(SAFE_ZONE_WIDTH/2-PLAYER_WIDTH/2);
         _player->setY(WINDOW_HEIGHT/2-PLAYER_HEIGHT/2);
-        stage++;
+        _stage++;
+        newStage();
     }
+}
+
+void Game::hitCheck()
+{
+    std::cout << "obstacle: " << _obstacles[0].getObstacle()->center().x() << std::endl;
+    std::cout << "player: " << _player->getPlayer()->x() << std::endl;
+
+    /* Player collision detection */
+    for (int i = 0; i < _obstacleSize; i++)
+    {
+        /* The Problem is here ... TODO*/
+//        if (_player->getPlayer()->contains(_obstacles[i].getObstacle()->topLeft()) ||
+//            _player->getPlayer()->contains(_obstacles[i].getObstacle()->topRight()) ||
+//            _player->getPlayer()->contains(_obstacles[i].getObstacle()->bottomLeft()) ||
+//            _player->getPlayer()->contains(_obstacles[i].getObstacle()->bottomRight()) ||
+//            _player->getPlayer()->contains(_obstacles[i].getObstacle()->center()))
+//            _gameActive = false;
+    }
+}
+
+void Game::newStage()
+{
+    _obstacleSize = _obstacleSize + 1;
+    delete[] _obstacles;
+    _obstacles = new Obstacle[_obstacleSize];
 }
 
 /* SLOTS FUNCTIONS */
 /* Main game updater */
 void Game::update()
 {
-    movePlayer();
-    repaint();
+    if (_gameActive)
+    {
+        _player->update();
+        hitCheck();
+        movePlayer();
+
+        for (int i = 0; i < _obstacleSize; i++)
+            _obstacles[i].update();
+
+        repaint();
+    }
 }

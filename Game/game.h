@@ -9,6 +9,7 @@
 
 #include "defines.h"
 #include "player.h"
+#include "obstacle.h"
 
 namespace Ui {
 class Game;
@@ -28,6 +29,8 @@ public:
     void keyReleaseEvent(QKeyEvent* event);
 
     void movePlayer();
+    void hitCheck();
+    void newStage();
 
 private slots:
     void update();
@@ -35,7 +38,9 @@ private slots:
 private:
     Ui::Game *ui;
 
-    int stage = 1;
+    int _stage = 1;
+    bool _gameActive = true;
+    int _obstacleSize = 1;
 
     bool _keyUp = false;
     bool _keyLeft = false;
@@ -45,6 +50,8 @@ private:
     QTimer* _gameTimer;
 
     Player* _player;
+
+    Obstacle* _obstacles;
 
     QRect* _victoryDoor;
     QRect* _safeZone;

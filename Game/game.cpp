@@ -85,11 +85,6 @@ void Game::paintEvent(QPaintEvent* event)
     }
 }
 
-void Game::mouseMoveEvent(QMouseEvent* event)
-{
-
-}
-
 void Game::keyPressEvent(QKeyEvent* event)
 {
     if (event->key() == Qt::Key_R)
@@ -98,8 +93,8 @@ void Game::keyPressEvent(QKeyEvent* event)
         _stage = 1;
         _obstacleSize = 0;
         newStage();
-        _player->setX(SAFE_ZONE_WIDTH/2-PLAYER_WIDTH/2);
-        _player->setY(WINDOW_HEIGHT/2-PLAYER_HEIGHT/2);
+        _player->moveLeft(SAFE_ZONE_WIDTH/2-PLAYER_WIDTH/2);
+        _player->moveTop(WINDOW_HEIGHT/2-PLAYER_HEIGHT/2);
         _gameActive = true;
     }
 
@@ -157,45 +152,45 @@ void Game::movePlayer()
 {
     if (_keyUp && _keyLeft)
     {
-        if (_player->getY() > 0)
-            _player->setY(_player->getY() - _player->getVel());
-        if (_player->getX() > 0)
-            _player->setX(_player->getX() - _player->getVel());
+        if (_player->y() > 0)
+            _player->moveTop(_player->y() - _player->getVel());
+        if (_player->x() > 0)
+            _player->moveLeft(_player->x() - _player->getVel());
     }
     else if (_keyUp && _keyRight)
     {
-        if (_player->getY() > 0)
-            _player->setY(_player->getY() - _player->getVel());
-        if (_player->getX() < (WINDOW_WIDTH - PLAYER_WIDTH))
-            _player->setX(_player->getX() + _player->getVel());
+        if (_player->y() > 0)
+            _player->moveTop(_player->y() - _player->getVel());
+        if (_player->x() < (WINDOW_WIDTH - PLAYER_WIDTH))
+            _player->moveLeft(_player->x() + _player->getVel());
     }
     else if (_keyDown && _keyLeft)
     {
-        if (_player->getY() < (WINDOW_HEIGHT - PLAYER_HEIGHT))
-            _player->setY(_player->getY() + _player->getVel());
-        if (_player->getX() > 0)
-            _player->setX(_player->getX() - _player->getVel());
+        if (_player->y() < (WINDOW_HEIGHT - PLAYER_HEIGHT))
+            _player->moveTop(_player->y() + _player->getVel());
+        if (_player->x() > 0)
+            _player->moveLeft(_player->x() - _player->getVel());
     }
     else if (_keyDown && _keyRight)
     {
-        if (_player->getY() < (WINDOW_HEIGHT - PLAYER_HEIGHT))
-            _player->setY(_player->getY() + _player->getVel());
-        if (_player->getX() < (WINDOW_WIDTH - PLAYER_WIDTH))
-            _player->setX(_player->getX() + _player->getVel());
+        if (_player->y() < (WINDOW_HEIGHT - PLAYER_HEIGHT))
+            _player->moveTop(_player->y() + _player->getVel());
+        if (_player->x() < (WINDOW_WIDTH - PLAYER_WIDTH))
+            _player->moveLeft(_player->x() + _player->getVel());
     }
-    else if (_keyUp && _player->getY() > 0)
-        _player->setY(_player->getY() - _player->getVel());
-    else if (_keyLeft && _player->getX() > 0)
-        _player->setX(_player->getX() - _player->getVel());
-    else if (_keyDown && _player->getY() < (WINDOW_HEIGHT - PLAYER_HEIGHT))
-        _player->setY(_player->getY() + _player->getVel());
-    else if (_keyRight && _player->getX() < (WINDOW_WIDTH - PLAYER_WIDTH))
-        _player->setX(_player->getX() + _player->getVel());
+    else if (_keyUp && _player->y() > 0)
+        _player->moveTop(_player->y() - _player->getVel());
+    else if (_keyLeft && _player->x() > 0)
+        _player->moveLeft(_player->x() - _player->getVel());
+    else if (_keyDown && _player->y() < (WINDOW_HEIGHT - PLAYER_HEIGHT))
+        _player->moveTop(_player->y() + _player->getVel());
+    else if (_keyRight && _player->x() < (WINDOW_WIDTH - PLAYER_WIDTH))
+        _player->moveLeft(_player->x() + _player->getVel());
 
-    if (_victoryDoor->contains(QPoint(_player->getX() + PLAYER_WIDTH/2, _player->getY() + PLAYER_HEIGHT/2)))
+    if (_victoryDoor->contains(QPoint(_player->x() + PLAYER_WIDTH/2, _player->y() + PLAYER_HEIGHT/2)))
     {
-        _player->setX(SAFE_ZONE_WIDTH/2-PLAYER_WIDTH/2);
-        _player->setY(WINDOW_HEIGHT/2-PLAYER_HEIGHT/2);
+        _player->moveLeft(SAFE_ZONE_WIDTH/2-PLAYER_WIDTH/2);
+        _player->moveTop(WINDOW_HEIGHT/2-PLAYER_HEIGHT/2);
         _stage++;
         newStage();
     }
@@ -203,19 +198,15 @@ void Game::movePlayer()
 
 void Game::hitCheck()
 {
-    std::cout << "obstacle: " << _obstacles[0].getObstacle()->center().x() << std::endl;
-    std::cout << "player: " << _player->getPlayer()->x() << std::endl;
-
     /* Player collision detection */
     for (int i = 0; i < _obstacleSize; i++)
     {
-        /* The Problem is here ... TODO*/
-//        if (_player->getPlayer()->contains(_obstacles[i].getObstacle()->topLeft()) ||
-//            _player->getPlayer()->contains(_obstacles[i].getObstacle()->topRight()) ||
-//            _player->getPlayer()->contains(_obstacles[i].getObstacle()->bottomLeft()) ||
-//            _player->getPlayer()->contains(_obstacles[i].getObstacle()->bottomRight()) ||
-//            _player->getPlayer()->contains(_obstacles[i].getObstacle()->center()))
-//            _gameActive = false;
+        if (_player->contains(_obstacles[i].topLeft()) ||
+            _player->contains(_obstacles[i].topRight()) ||
+            _player->contains(_obstacles[i].bottomLeft()) ||
+            _player->contains(_obstacles[i].bottomRight()) ||
+            _player->contains(_obstacles[i].center()))
+            _gameActive = false;
     }
 }
 
@@ -232,7 +223,6 @@ void Game::update()
 {
     if (_gameActive)
     {
-        _player->update();
         hitCheck();
         movePlayer();
 

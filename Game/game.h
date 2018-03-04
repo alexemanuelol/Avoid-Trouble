@@ -24,7 +24,6 @@ public:
     ~Game();
 
     void paintEvent(QPaintEvent * event);
-    void mouseMoveEvent(QMouseEvent* event);
     void keyPressEvent(QKeyEvent* event);
     void keyReleaseEvent(QKeyEvent* event);
 

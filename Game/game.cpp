@@ -20,7 +20,7 @@ Game::Game(QWidget *parent) : QMainWindow(parent), ui(new Ui::Game)
                              VICTORY_DOOR_HEIGHT);
 
     /* Create the safe zone */
-    _safeZone = new QRect(0, WINDOW_HEIGHT/2 - SAFE_ZONE_HEIGHT/2,
+    _safezone = new Safezone(0, WINDOW_HEIGHT/2 - SAFE_ZONE_HEIGHT/2,
                           SAFE_ZONE_WIDTH, SAFE_ZONE_HEIGHT);
 
     /* Create the obstacle array */
@@ -41,6 +41,11 @@ Game::~Game()
     delete ui;
     delete _player;
     delete _gameTimer;
+    delete _safezone;
+
+    //for (int i = 0; i < _obstacleSize; i++)
+    //    delete _obstacles[i];
+    delete[] _obstacles;
 }
 
 void Game::paintEvent(QPaintEvent* event)
@@ -60,7 +65,7 @@ void Game::paintEvent(QPaintEvent* event)
         painter.fillRect(*_victoryDoor,Qt::green);
 
         /* Paint the safe zone */
-        painter.fillRect(*_safeZone, Qt::gray);
+        _safezone->paint(painter);
 
         /* Paint the player */
         _player->paint(painter);
@@ -196,20 +201,6 @@ void Game::movePlayer()
     }
 }
 
-void Game::hitCheck()
-{
-    /* Player collision detection */
-    for (int i = 0; i < _obstacleSize; i++)
-    {
-        if (_player->contains(_obstacles[i].topLeft()) ||
-            _player->contains(_obstacles[i].topRight()) ||
-            _player->contains(_obstacles[i].bottomLeft()) ||
-            _player->contains(_obstacles[i].bottomRight()) ||
-            _player->contains(_obstacles[i].center()))
-            _gameActive = false;
-    }
-}
-
 void Game::newStage()
 {
     _obstacleSize = _obstacleSize + 1;
@@ -223,7 +214,8 @@ void Game::update()
 {
     if (_gameActive)
     {
-        hitCheck();
+        _player->checkSafe(_safezone);
+        _gameActive = _player->checkCollision(_obstacles, _obstacleSize);
         movePlayer();
 
         for (int i = 0; i < _obstacleSize; i++)

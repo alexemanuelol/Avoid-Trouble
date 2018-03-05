@@ -2,7 +2,6 @@
 #define OBSTACLE_H
 
 #include "defines.h"
-#include "player.h"
 
 #include <QPainter>
 #include <QRect>

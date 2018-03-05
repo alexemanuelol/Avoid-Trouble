@@ -27,13 +27,15 @@ SOURCES += \
         main.cpp \
         game.cpp \
     player.cpp \
-    obstacle.cpp
+    obstacle.cpp \
+    safezone.cpp
 
 HEADERS += \
         game.h \
     defines.h \
     player.h \
-    obstacle.h
+    obstacle.h \
+    safezone.h
 
 FORMS += \
         game.ui

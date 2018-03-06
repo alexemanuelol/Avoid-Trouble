@@ -2,6 +2,7 @@
 
 Obstacle::Obstacle() : QRect()
 {
+    /* Set a random starting position and random velocity */
     this->setX(rand() % ((WINDOW_WIDTH - OBSTACLE_WIDTH) - 100 + 1) + 100);
     this->setY(rand() % ((WINDOW_HEIGHT - OBSTACLE_HEIGHT) - 0 + 1) + 0);
     _vx = rand() % (OBSTACLE_MAX_VEL - OBSTACLE_MIN_VEL + 1) + OBSTACLE_MIN_VEL;
@@ -18,11 +19,12 @@ Obstacle::Obstacle() : QRect()
 
 Obstacle::~Obstacle()
 {
-    //delete this;
+    /* Delete */
 }
 
 void Obstacle::update()
 {
+    /* Move the obstacle */
     this->moveTop(this->y() + _vy);
     this->moveLeft(this->x() + _vx);
 
@@ -41,5 +43,6 @@ void Obstacle::update()
 
 void Obstacle::paint(QPainter & painter) const
 {
-    painter.fillRect(this->x(), this->y(), OBSTACLE_WIDTH, OBSTACLE_HEIGHT, Qt::red);
+    /* Paint the obstacle */
+    painter.fillRect(*this, Qt::red);
 }

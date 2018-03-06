@@ -1,6 +1,4 @@
 #include "player.h"
-#include "obstacle.h"
-#include <iostream>
 
 Player::Player(int x, int y, int velocity) : QRect(x, y, PLAYER_WIDTH, PLAYER_HEIGHT)
 {
@@ -9,12 +7,12 @@ Player::Player(int x, int y, int velocity) : QRect(x, y, PLAYER_WIDTH, PLAYER_HE
 
 Player::~Player()
 {
-    //delete this;
+    /* Delete */
 }
 
 void Player::paint(QPainter & painter) const
 {
-    //painter.fillRect(this->x(), this->y(), PLAYER_WIDTH, PLAYER_HEIGHT, Qt::white);
+    /* Paint the player */
     painter.fillRect(*this, Qt::white);
 }
 
@@ -32,7 +30,6 @@ void Player::checkSafe(Safezone* safezone)
 
 bool Player::checkCollision(Obstacle * obstacles, int obstacleSize)
 {
-    // TODO: FIX COLLISION DETECT FOR OBSTACLES AND PLAYER
     /* Collision detect of player and obstacles */
     for (int i = 0; i < obstacleSize; i++)
     {
@@ -42,7 +39,15 @@ bool Player::checkCollision(Obstacle * obstacles, int obstacleSize)
              this->contains(obstacles[i].bottomRight()) ||
              this->contains(obstacles[i].center())) && !_isSafe)
             return false;
-        else
-            return true;
     }
+    return true;
+}
+
+bool Player::checkVictoryDoor(QRect * victoryDoor)
+{
+    /* Check if player has reached the victory door */
+    if (victoryDoor->contains(QPoint(this->x() + PLAYER_WIDTH/2, this->y() + PLAYER_HEIGHT/2)))
+        return true;
+    else
+        return false;
 }

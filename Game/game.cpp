@@ -1,8 +1,6 @@
 #include "game.h"
 #include "ui_game.h"
 
-#include <iostream>
-
 Game::Game(QWidget *parent) : QMainWindow(parent), ui(new Ui::Game)
 {
     ui->setupUi(this);
@@ -42,21 +40,20 @@ Game::~Game()
     delete _player;
     delete _gameTimer;
     delete _safezone;
-
-    //for (int i = 0; i < _obstacleSize; i++)
-    //    delete _obstacles[i];
     delete[] _obstacles;
 }
 
 void Game::paintEvent(QPaintEvent* event)
 {
+    Q_UNUSED(event);
+
     QPainter painter(this);
+
+    /* Paint the background */
+    painter.fillRect(0, 0, WINDOW_WIDTH, WINDOW_HEIGHT, Qt::black);
 
     if (_gameActive)
     {
-        /* Paint the background */
-        painter.fillRect(0, 0, WINDOW_WIDTH, WINDOW_HEIGHT, Qt::black);
-
         /* Paint the obstacles */
         for (int i = 0; i < _obstacleSize; i++)
             _obstacles[i].paint(painter);
@@ -76,12 +73,17 @@ void Game::paintEvent(QPaintEvent* event)
         painter.setPen(pen);
         painter.drawText(WINDOW_WIDTH/2 - 65, 25, QString("Stage: "));
         painter.drawText(WINDOW_WIDTH/2 + 20, 25, QString::number(_stage));
+
+        if (_isPaused)
+        {
+            painter.setFont(QFont("Arial", 40, QFont::Bold));
+            QPen pen(Qt::white);
+            painter.setPen(pen);
+            painter.drawText(WINDOW_WIDTH/2 - 80, WINDOW_HEIGHT/2, QString("PAUSE"));
+        }
     }
     else
     {
-        /* Paint the background */
-        painter.fillRect(0, 0, WINDOW_WIDTH, WINDOW_HEIGHT, Qt::black);
-
         /* Paint Game Over */
         painter.setFont(QFont("Arial", 40, QFont::Bold));
         QPen pen(Qt::white);
@@ -92,22 +94,22 @@ void Game::paintEvent(QPaintEvent* event)
 
 void Game::keyPressEvent(QKeyEvent* event)
 {
+    /* Restart */
     if (event->key() == Qt::Key_R)
     {
-        // Restart
-        _stage = 1;
+        _stage = 0;
         _obstacleSize = 0;
         newStage();
-        _player->moveLeft(SAFE_ZONE_WIDTH/2-PLAYER_WIDTH/2);
-        _player->moveTop(WINDOW_HEIGHT/2-PLAYER_HEIGHT/2);
         _gameActive = true;
     }
 
+    /* Pause */
     if (event->key() == Qt::Key_P)
     {
-        // Pause
+        _isPaused = !_isPaused;
     }
 
+    /* Check player movement, key press */
     switch (event->key())
     {
     case Qt::Key_W:
@@ -125,11 +127,15 @@ void Game::keyPressEvent(QKeyEvent* event)
     case Qt::Key_D:
         _keyRight = true;
         break;
+
+    default:
+        break;
     }
 }
 
 void Game::keyReleaseEvent(QKeyEvent* event)
 {
+    /* Check player movement, key release */
     if (!event->isAutoRepeat())
     {
         switch (event->key())
@@ -191,18 +197,13 @@ void Game::movePlayer()
         _player->moveTop(_player->y() + _player->getVel());
     else if (_keyRight && _player->x() < (WINDOW_WIDTH - PLAYER_WIDTH))
         _player->moveLeft(_player->x() + _player->getVel());
-
-    if (_victoryDoor->contains(QPoint(_player->x() + PLAYER_WIDTH/2, _player->y() + PLAYER_HEIGHT/2)))
-    {
-        _player->moveLeft(SAFE_ZONE_WIDTH/2-PLAYER_WIDTH/2);
-        _player->moveTop(WINDOW_HEIGHT/2-PLAYER_HEIGHT/2);
-        _stage++;
-        newStage();
-    }
 }
 
 void Game::newStage()
 {
+    _player->moveLeft(SAFE_ZONE_WIDTH/2-PLAYER_WIDTH/2);
+    _player->moveTop(WINDOW_HEIGHT/2-PLAYER_HEIGHT/2);
+    _stage++;
     _obstacleSize = _obstacleSize + 1;
     delete[] _obstacles;
     _obstacles = new Obstacle[_obstacleSize];
@@ -214,13 +215,18 @@ void Game::update()
 {
     if (_gameActive)
     {
-        _player->checkSafe(_safezone);
-        _gameActive = _player->checkCollision(_obstacles, _obstacleSize);
-        movePlayer();
+        if (!_isPaused)
+        {
+            _player->checkSafe(_safezone);
+            _gameActive = _player->checkCollision(_obstacles, _obstacleSize);
+            movePlayer();
+            if (_player->checkVictoryDoor(_victoryDoor))
+                newStage();
+            _safezone->checkCollision(_obstacles, _obstacleSize);
 
-        for (int i = 0; i < _obstacleSize; i++)
-            _obstacles[i].update();
-
+            for (int i = 0; i < _obstacleSize; i++)
+                _obstacles[i].update();
+        }
         repaint();
     }
 }

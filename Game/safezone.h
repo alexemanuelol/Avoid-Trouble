@@ -1,10 +1,11 @@
 #ifndef SAFEZONE_H
 #define SAFEZONE_H
 
-#include "defines.h"
-
 #include <QPainter>
 #include <QRect>
+
+#include "defines.h"
+#include "obstacle.h"
 
 class Safezone : public QRect
 {
@@ -13,6 +14,8 @@ public:
     ~Safezone();
 
     void paint(QPainter & painter) const;
+
+    void checkCollision(Obstacle * obstacles, int obstacleSize);
 
 private:
     int _velocity;

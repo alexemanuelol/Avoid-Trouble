@@ -1,12 +1,12 @@
 #ifndef PLAYER_H
 #define PLAYER_H
 
-#include "defines.h"
-#include "obstacle.h"
-#include "safezone.h"
-
 #include <QPainter>
 #include <QRect>
+
+#include "defines.h"
+#include "safezone.h"
+#include "obstacle.h"
 
 class Player : public QRect
 {
@@ -18,11 +18,10 @@ public:
 
     void checkSafe(Safezone* safezone);
     bool checkCollision(Obstacle * obstacles, int obstacleSize);
+    bool checkVictoryDoor(QRect * victoryDoor);
 
     void setVel(int velocity) { _velocity = velocity; }
     int getVel()    { return _velocity; }
-
-    bool isSafe()   { return _isSafe; }
 
 private:
     int _velocity;

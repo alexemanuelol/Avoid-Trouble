@@ -2,7 +2,6 @@
 #define GAME_H
 
 #include <QMainWindow>
-
 #include <QPaintEvent>
 #include <QPainter>
 #include <QTimer>
@@ -38,22 +37,22 @@ private:
     Ui::Game *ui;
     QTimer* _gameTimer;
 
-    Player* _player;
-    Obstacle* _obstacles;
-    Safezone* _safezone;
+    Player*             _player;
+    Obstacle*           _obstacles;
+    Safezone*           _safezone;
+    QRect*              _victoryDoor;
 
-    bool _gameActive = true;
-    bool _isSafe = true;
+    bool _gameActive    = true;
+    bool _isSafe        = true;
+    bool _isPaused      = false;
 
-    int _stage = 1;
-    int _obstacleSize = 1;
+    int _stage          = 1;
+    int _obstacleSize   = 1;
 
-    bool _keyUp = false;
-    bool _keyLeft = false;
-    bool _keyDown = false;
-    bool _keyRight = false;
-
-    QRect* _victoryDoor;
+    bool _keyUp         = false;
+    bool _keyLeft       = false;
+    bool _keyDown       = false;
+    bool _keyRight      = false;
 };
 
 #endif // GAME_H

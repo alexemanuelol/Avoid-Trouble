@@ -3,6 +3,7 @@
 
 #include <QPainter>
 #include <QRect>
+#include <QPolygon>
 
 #include "defines.h"
 #include "obstacle.h"
@@ -17,8 +18,17 @@ public:
 
     void checkCollision(Obstacle * obstacles, int obstacleSize);
 
+    QPolygon getLeftPol() const      { return *_leftPolygon; }
+    QPolygon getTopPol() const       { return *_topPolygon; }
+    QPolygon getRightPol() const     { return *_rightPolygon; }
+    QPolygon getBottomPol() const    { return *_bottomPolygon; }
+
 private:
     int _velocity;
+    QPolygon* _leftPolygon;
+    QPolygon* _topPolygon;
+    QPolygon* _rightPolygon;
+    QPolygon* _bottomPolygon;
 };
 
 #endif // SAFEZONE_H

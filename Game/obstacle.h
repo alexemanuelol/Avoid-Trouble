@@ -3,6 +3,7 @@
 
 #include <QPainter>
 #include <QRect>
+#include <QColor>
 
 #include "defines.h"
 
@@ -21,11 +22,14 @@ public:
     float getVelX()    { return _vx; }
     float getVelY()    { return _vy; }
 
-    void changeXVel()	{ _vx *= -1; }
-    void changeYVel()	{ _vy *= -1; }
+    void changeXVel();
+    void changeYVel();
 
 private:
+    QColor* _color;
     float _vx, _vy;
+    int _changeDirDelay = 0;
+    bool _readyToChangeDir = true;
 };
 
 #endif // OBSTACLE_H

@@ -37,10 +37,11 @@ Game::Game(QWidget *parent) : QMainWindow(parent), ui(new Ui::Game)
 Game::~Game()
 {
     delete ui;
-    delete _player;
     delete _gameTimer;
-    delete _safezone;
+    delete _player;
     delete[] _obstacles;
+    delete _safezone;
+    delete _victoryDoor;
 }
 
 void Game::paintEvent(QPaintEvent* event)

@@ -2,9 +2,11 @@
 #define GAME_H
 
 #include <QMainWindow>
+#include <QTimer>
+#include <QRect>
 #include <QPaintEvent>
 #include <QPainter>
-#include <QTimer>
+#include <QKeyEvent>
 
 #include "defines.h"
 #include "player.h"
@@ -34,13 +36,13 @@ private slots:
     void update();
 
 private:
-    Ui::Game *ui;
-    QTimer* _gameTimer;
+    Ui::Game*           ui;
+    QTimer*             _gameTimer;
+    QRect*              _victoryDoor;
 
     Player*             _player;
     Obstacle*           _obstacles;
     Safezone*           _safezone;
-    QRect*              _victoryDoor;
 
     bool _gameActive    = true;
     bool _isSafe        = true;

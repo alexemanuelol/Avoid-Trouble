@@ -1,3 +1,13 @@
+/*
+###############################################################################
+#                                                                             #
+# Author: Alexander Emanuelsson                                               #
+#                                                                             #
+# Project: https://github.com/alexemanuelol/Avoid-Trouble-Game.git            #
+#                                                                             #
+###############################################################################
+*/
+
 #include "safezone.h"
 
 Safezone::Safezone(int x, int y, int width, int height) : QRect(x, y, width, height)
@@ -31,7 +41,7 @@ Safezone::~Safezone()
 void Safezone::paint(QPainter & painter) const
 {
     /* Paint the safe zone */
-    painter.fillRect(*this, Qt::gray);
+    painter.fillRect(*this, Qt::red);
 }
 
 void Safezone::checkCollision(Obstacle * obstacles, int obstacleSize)

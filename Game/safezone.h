@@ -1,3 +1,13 @@
+/*
+###############################################################################
+#                                                                             #
+# Author: Alexander Emanuelsson                                               #
+#                                                                             #
+# Project: https://github.com/alexemanuelol/Avoid-Trouble-Game.git            #
+#                                                                             #
+###############################################################################
+*/
+
 #ifndef SAFEZONE_H
 #define SAFEZONE_H
 

@@ -1,3 +1,13 @@
+/*
+###############################################################################
+#                                                                             #
+# Author: Alexander Emanuelsson                                               #
+#                                                                             #
+# Project: https://github.com/alexemanuelol/Avoid-Trouble-Game.git            #
+#                                                                             #
+###############################################################################
+*/
+
 #include "player.h"
 
 Player::Player(int x, int y, int velocity) : QRect(x, y, PLAYER_WIDTH, PLAYER_HEIGHT)

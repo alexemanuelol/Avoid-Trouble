@@ -1,3 +1,13 @@
+/*
+###############################################################################
+#                                                                             #
+# Author: Alexander Emanuelsson                                               #
+#                                                                             #
+# Project: https://github.com/alexemanuelol/Avoid-Trouble-Game.git            #
+#                                                                             #
+###############################################################################
+*/
+
 #ifndef PLAYER_H
 #define PLAYER_H
 

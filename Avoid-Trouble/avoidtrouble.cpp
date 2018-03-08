@@ -15,13 +15,20 @@ AvoidTrouble::AvoidTrouble(QWidget *parent) : QMainWindow(parent), ui(new Ui::Av
 {
     ui->setupUi(this);
 
-    this->setWindowTitle("Avoid Trouble");
-
     srand(time(NULL));
 
-    /* Set the Game window to a fixed size */
+    /* Window initial settings */
+    setWindowTitle("Avoid Trouble");
     setFixedWidth(WINDOW_WIDTH);
     setFixedHeight(WINDOW_HEIGHT);
+
+    /* Create the safe zone */
+    _safezone = new Safezone(0, WINDOW_HEIGHT/2 - SAFE_ZONE_HEIGHT/2,
+                             SAFE_ZONE_WIDTH, SAFE_ZONE_HEIGHT);
+
+    /* Create the player */
+    _player = new Player(SAFE_ZONE_WIDTH/2-PLAYER_WIDTH/2,
+                         WINDOW_HEIGHT/2-PLAYER_HEIGHT/2, PLAYER_VELOCITY);
 
     /* Create the victory door */
     _victoryDoor = new QRect(WINDOW_WIDTH - VICTORY_DOOR_WIDTH,
@@ -29,16 +36,8 @@ AvoidTrouble::AvoidTrouble(QWidget *parent) : QMainWindow(parent), ui(new Ui::Av
                              VICTORY_DOOR_WIDTH,
                              VICTORY_DOOR_HEIGHT);
 
-    /* Create the safe zone */
-    _safezone = new Safezone(0, WINDOW_HEIGHT/2 - SAFE_ZONE_HEIGHT/2,
-                          SAFE_ZONE_WIDTH, SAFE_ZONE_HEIGHT);
-
     /* Create the obstacle array */
     _obstacles = new Obstacle[_obstacleSize];
-
-    /* Create the player */
-    _player = new Player(SAFE_ZONE_WIDTH/2-PLAYER_WIDTH/2,
-                         WINDOW_HEIGHT/2-PLAYER_HEIGHT/2, PLAYER_VELOCITY);
 
     /* Main game timer */
     _gameTimer = new QTimer(this);
@@ -48,12 +47,12 @@ AvoidTrouble::AvoidTrouble(QWidget *parent) : QMainWindow(parent), ui(new Ui::Av
 
 AvoidTrouble::~AvoidTrouble()
 {
-    delete ui;
-    delete _gameTimer;
-    delete _player;
+    delete   ui;
+    delete   _safezone;
+    delete   _player;
+    delete   _victoryDoor;
     delete[] _obstacles;
-    delete _safezone;
-    delete _victoryDoor;
+    delete   _gameTimer;
 }
 
 void AvoidTrouble::paintEvent(QPaintEvent* event)
@@ -61,18 +60,19 @@ void AvoidTrouble::paintEvent(QPaintEvent* event)
     Q_UNUSED(event);
 
     QPainter painter(this);
+    painter.setPen(QPen(Qt::white));
 
     /* Paint the background */
     painter.fillRect(0, 0, WINDOW_WIDTH, WINDOW_HEIGHT, Qt::black);
 
     if (_gameActive)
     {
+        /* Paint the victory door */
+        painter.fillRect(*_victoryDoor,Qt::green);
+
         /* Paint the obstacles */
         for (int i = 0; i < _obstacleSize; i++)
             _obstacles[i].paint(painter);
-
-        /* Paint the victory door */
-        painter.fillRect(*_victoryDoor,Qt::green);
 
         /* Paint the safe zone */
         _safezone->paint(painter);
@@ -82,16 +82,11 @@ void AvoidTrouble::paintEvent(QPaintEvent* event)
 
         /* Paint stage number */
         painter.setFont(QFont("Arial", 16, QFont::Bold));
-        QPen pen(Qt::white);
-        painter.setPen(pen);
-        painter.drawText(WINDOW_WIDTH/2 - 65, 25, QString("Stage: "));
-        painter.drawText(WINDOW_WIDTH/2 + 20, 25, QString::number(_stage));
+        painter.drawText(WINDOW_WIDTH/2 - 45, 25, QString("Stage: ") + QString::number(_stage));
 
         if (_isPaused)
         {
             painter.setFont(QFont("Arial", 40, QFont::Bold));
-            QPen pen(Qt::white);
-            painter.setPen(pen);
             painter.drawText(WINDOW_WIDTH/2 - 80, WINDOW_HEIGHT/2, QString("PAUSE"));
         }
     }
@@ -99,27 +94,29 @@ void AvoidTrouble::paintEvent(QPaintEvent* event)
     {
         /* Paint Game Over */
         painter.setFont(QFont("Arial", 40, QFont::Bold));
-        QPen pen(Qt::white);
-        painter.setPen(pen);
         painter.drawText(WINDOW_WIDTH/2 - 170, WINDOW_HEIGHT/2, QString("GAME OVER!"));
+        painter.setFont(QFont("Arial", 25, QFont::Bold));
+        painter.drawText(WINDOW_WIDTH/2 - 140, WINDOW_HEIGHT/2 + 50, QString("You got to stage ") + QString::number(_stage));
     }
 }
 
 void AvoidTrouble::keyPressEvent(QKeyEvent* event)
 {
-    /* Restart */
-    if (event->key() == Qt::Key_R)
+    if (event->key() == Qt::Key_P)              /* Pause */
+    {
+        _isPaused = !_isPaused;
+    }
+    else if (event->key() == Qt::Key_R)         /* Restart */
     {
         _stage = 0;
         _obstacleSize = 0;
         newStage();
         _gameActive = true;
+        _isPaused = false;
     }
-
-    /* Pause */
-    if (event->key() == Qt::Key_P)
+    else if (event->key() == Qt::Key_Escape)    /* Exit game */
     {
-        _isPaused = !_isPaused;
+        this->close();
     }
 
     /* Check player movement, key press */
@@ -149,26 +146,23 @@ void AvoidTrouble::keyPressEvent(QKeyEvent* event)
 void AvoidTrouble::keyReleaseEvent(QKeyEvent* event)
 {
     /* Check player movement, key release */
-    if (!event->isAutoRepeat())
+    switch (event->key())
     {
-        switch (event->key())
-        {
-        case Qt::Key_W:
-            _keyUp = false;
-            break;
+    case Qt::Key_W:
+        _keyUp = false;
+        break;
 
-        case Qt::Key_A:
-            _keyLeft = false;
-            break;
+    case Qt::Key_A:
+        _keyLeft = false;
+        break;
 
-        case Qt::Key_S:
-            _keyDown = false;
-            break;
+    case Qt::Key_S:
+        _keyDown = false;
+        break;
 
-        case Qt::Key_D:
-            _keyRight = false;
-            break;
-        }
+    case Qt::Key_D:
+        _keyRight = false;
+        break;
     }
 }
 

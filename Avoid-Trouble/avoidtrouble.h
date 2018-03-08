@@ -35,24 +35,23 @@ public:
     explicit AvoidTrouble(QWidget *parent = 0);
     ~AvoidTrouble();
 
-    void paintEvent(QPaintEvent * event);
-    void keyPressEvent(QKeyEvent* event);
-    void keyReleaseEvent(QKeyEvent* event);
+    void    paintEvent(QPaintEvent * event);
+    void    keyPressEvent(QKeyEvent* event);
+    void    keyReleaseEvent(QKeyEvent* event);
 
-    void movePlayer();
-    void newStage();
+    void    movePlayer();
+    void    newStage();
 
 private slots:
-    void update();
+    void    update();
 
 private:
     Ui::AvoidTrouble*   ui;
-    QTimer*             _gameTimer;
-    QRect*              _victoryDoor;
-
-    Player*             _player;
-    Obstacle*           _obstacles;
     Safezone*           _safezone;
+    Player*             _player;
+    QRect*              _victoryDoor;
+    Obstacle*           _obstacles;
+    QTimer*             _gameTimer;
 
     bool _gameActive    = true;
     bool _isSafe        = true;

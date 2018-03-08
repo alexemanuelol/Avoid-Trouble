@@ -12,6 +12,8 @@
 
 Safezone::Safezone(int x, int y, int width, int height) : QRect(x, y, width, height)
 {
+    /* Polygons are used to devide the safezone into 4 different parts
+       just to easier make out at which side the obstacle hit the safezone */
     _leftPolygon    = new QPolygon();
     _topPolygon     = new QPolygon();
     _rightPolygon   = new QPolygon();

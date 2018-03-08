@@ -24,18 +24,18 @@ public:
     Player(int x, int y, int velocity);
     ~Player();
 
-    void paint(QPainter & painter) const;
+    void    paint(QPainter & painter) const;
 
-    void checkSafe(Safezone* safezone);
-    bool checkCollision(Obstacle * obstacles, int obstacleSize);
-    bool checkVictoryDoor(QRect * victoryDoor);
+    void    checkSafe(Safezone* safezone);
+    bool    checkCollision(Obstacle * obstacles, int obstacleSize);
+    bool    checkVictoryDoor(QRect * victoryDoor);
 
-    void setVel(int velocity) { _velocity = velocity; }
-    int getVel()    { return _velocity; }
+    void    setVel(int velocity) { _velocity = velocity; }
+    int     getVel()    { return _velocity; }
 
 private:
-    int _velocity;
-    bool _isSafe;
+    int     _velocity;
+    bool    _isSafe;
 };
 
 #endif // PLAYER_H

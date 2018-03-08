@@ -6,7 +6,7 @@
 
 #define PLAYER_WIDTH                    20
 #define PLAYER_HEIGHT                   20
-#define PLAYER_VELOCITY                 4   // 760 for debug
+#define PLAYER_VELOCITY                 4
 
 #define VICTORY_DOOR_WIDTH              10
 #define VICTORY_DOOR_HEIGHT             80

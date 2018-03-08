@@ -29,10 +29,10 @@ void Player::paint(QPainter & painter) const
 void Player::checkSafe(Safezone* safezone)
 {
     /* Check if player is inside safezone */
-    if (safezone->contains(this->topLeft()) &&
-        safezone->contains(this->topRight()) &&
-        safezone->contains(this->bottomRight()) &&
-        safezone->contains(this->bottomLeft()))
+    if (safezone->contains(topLeft()) &&
+        safezone->contains(topRight()) &&
+        safezone->contains(bottomRight()) &&
+        safezone->contains(bottomLeft()))
         _isSafe = true;
     else
         _isSafe = false;
@@ -43,11 +43,11 @@ bool Player::checkCollision(Obstacle * obstacles, int obstacleSize)
     /* Collision detect of player and obstacles */
     for (int i = 0; i < obstacleSize; i++)
     {
-        if ((this->contains(obstacles[i].topLeft()) ||
-             this->contains(obstacles[i].topRight()) ||
-             this->contains(obstacles[i].bottomLeft()) ||
-             this->contains(obstacles[i].bottomRight()) ||
-             this->contains(obstacles[i].center())) && !_isSafe)
+        if ((contains(obstacles[i].topLeft()) ||
+             contains(obstacles[i].topRight()) ||
+             contains(obstacles[i].bottomLeft()) ||
+             contains(obstacles[i].bottomRight()) ||
+             contains(obstacles[i].center())) && !_isSafe)
             return false;
     }
     return true;
@@ -56,7 +56,7 @@ bool Player::checkCollision(Obstacle * obstacles, int obstacleSize)
 bool Player::checkVictoryDoor(QRect * victoryDoor)
 {
     /* Check if player has reached the victory door */
-    if (victoryDoor->contains(QPoint(this->x() + PLAYER_WIDTH/2, this->y() + PLAYER_HEIGHT/2)))
+    if (victoryDoor->contains(QPoint(x() + PLAYER_WIDTH/2, y() + PLAYER_HEIGHT/2)))
         return true;
     else
         return false;

@@ -12,3 +12,6 @@ To learn more about C++ and QT Creator.
 - Use 'W', 'A', 'S' and 'D' to move the player
 - Press 'R' to restart the game
 - Press 'P' to pause the game
+
+# TODO:
+- Fix safezone delay at start so that the player dont get killed instantly when entering the next stage

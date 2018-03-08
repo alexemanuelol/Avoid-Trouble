@@ -24,21 +24,21 @@ public:
     Safezone(int x, int y, int width, int height);
     ~Safezone();
 
-    void paint(QPainter & painter) const;
+    void        paint(QPainter & painter) const;
 
-    void checkCollision(Obstacle * obstacles, int obstacleSize);
+    void        checkCollision(Obstacle * obstacles, int obstacleSize);
 
-    QPolygon getLeftPol() const      { return *_leftPolygon; }
-    QPolygon getTopPol() const       { return *_topPolygon; }
-    QPolygon getRightPol() const     { return *_rightPolygon; }
-    QPolygon getBottomPol() const    { return *_bottomPolygon; }
+    QPolygon    getLeftPol()    const   { return *_leftPolygon; }
+    QPolygon    getTopPol()     const   { return *_topPolygon; }
+    QPolygon    getRightPol()   const   { return *_rightPolygon; }
+    QPolygon    getBottomPol()  const   { return *_bottomPolygon; }
 
 private:
-    int _velocity;
-    QPolygon* _leftPolygon;
-    QPolygon* _topPolygon;
-    QPolygon* _rightPolygon;
-    QPolygon* _bottomPolygon;
+    int         _velocity;
+    QPolygon*   _leftPolygon;
+    QPolygon*   _topPolygon;
+    QPolygon*   _rightPolygon;
+    QPolygon*   _bottomPolygon;
 };
 
 #endif // SAFEZONE_H

@@ -43,7 +43,11 @@ Safezone::~Safezone()
 void Safezone::paint(QPainter & painter) const
 {
     /* Paint the safe zone */
-    painter.fillRect(*this, Qt::red);
+    if (_safeStuckDelay == 0)
+        painter.fillRect(*this, Qt::red);
+    else
+        painter.fillRect(*this, Qt::darkRed);
+
 }
 
 void Safezone::checkCollision(Obstacle * obstacles, int obstacleSize)
@@ -59,5 +63,16 @@ void Safezone::checkCollision(Obstacle * obstacles, int obstacleSize)
             obstacles[i].changeXVel();
         else if (getBottomPol().containsPoint(obstacles[i].center(), Qt::OddEvenFill))
             obstacles[i].changeYVel();
+    }
+}
+
+void Safezone::updateSafeStuck(Player * player)
+{
+    if (_safeStuckDelay == 0)
+        player->setSafeStuck(false);
+    else
+    {
+        player->setSafeStuck(true);
+        _safeStuckDelay--;
     }
 }

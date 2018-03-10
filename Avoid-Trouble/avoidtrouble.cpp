@@ -168,42 +168,45 @@ void AvoidTrouble::keyReleaseEvent(QKeyEvent* event)
 
 void AvoidTrouble::movePlayer()
 {
-    if (_keyUp && _keyLeft)
+    if (!_player->getSafeStuck())
     {
-        if (_player->y() > 0)
+        if (_keyUp && _keyLeft)
+        {
+            if (_player->y() > 0)
+                _player->moveTop(_player->y() - _player->getVel());
+            if (_player->x() > 0)
+                _player->moveLeft(_player->x() - _player->getVel());
+        }
+        else if (_keyUp && _keyRight)
+        {
+            if (_player->y() > 0)
+                _player->moveTop(_player->y() - _player->getVel());
+            if (_player->x() < (WINDOW_WIDTH - PLAYER_WIDTH))
+                _player->moveLeft(_player->x() + _player->getVel());
+        }
+        else if (_keyDown && _keyLeft)
+        {
+            if (_player->y() < (WINDOW_HEIGHT - PLAYER_HEIGHT))
+                _player->moveTop(_player->y() + _player->getVel());
+            if (_player->x() > 0)
+                _player->moveLeft(_player->x() - _player->getVel());
+        }
+        else if (_keyDown && _keyRight)
+        {
+            if (_player->y() < (WINDOW_HEIGHT - PLAYER_HEIGHT))
+                _player->moveTop(_player->y() + _player->getVel());
+            if (_player->x() < (WINDOW_WIDTH - PLAYER_WIDTH))
+                _player->moveLeft(_player->x() + _player->getVel());
+        }
+        else if (_keyUp && _player->y() > 0)
             _player->moveTop(_player->y() - _player->getVel());
-        if (_player->x() > 0)
+        else if (_keyLeft && _player->x() > 0)
             _player->moveLeft(_player->x() - _player->getVel());
-    }
-    else if (_keyUp && _keyRight)
-    {
-        if (_player->y() > 0)
-            _player->moveTop(_player->y() - _player->getVel());
-        if (_player->x() < (WINDOW_WIDTH - PLAYER_WIDTH))
+        else if (_keyDown && _player->y() < (WINDOW_HEIGHT - PLAYER_HEIGHT))
+            _player->moveTop(_player->y() + _player->getVel());
+        else if (_keyRight && _player->x() < (WINDOW_WIDTH - PLAYER_WIDTH))
             _player->moveLeft(_player->x() + _player->getVel());
     }
-    else if (_keyDown && _keyLeft)
-    {
-        if (_player->y() < (WINDOW_HEIGHT - PLAYER_HEIGHT))
-            _player->moveTop(_player->y() + _player->getVel());
-        if (_player->x() > 0)
-            _player->moveLeft(_player->x() - _player->getVel());
-    }
-    else if (_keyDown && _keyRight)
-    {
-        if (_player->y() < (WINDOW_HEIGHT - PLAYER_HEIGHT))
-            _player->moveTop(_player->y() + _player->getVel());
-        if (_player->x() < (WINDOW_WIDTH - PLAYER_WIDTH))
-            _player->moveLeft(_player->x() + _player->getVel());
-    }
-    else if (_keyUp && _player->y() > 0)
-        _player->moveTop(_player->y() - _player->getVel());
-    else if (_keyLeft && _player->x() > 0)
-        _player->moveLeft(_player->x() - _player->getVel());
-    else if (_keyDown && _player->y() < (WINDOW_HEIGHT - PLAYER_HEIGHT))
-        _player->moveTop(_player->y() + _player->getVel());
-    else if (_keyRight && _player->x() < (WINDOW_WIDTH - PLAYER_WIDTH))
-        _player->moveLeft(_player->x() + _player->getVel());
 }
 
 void AvoidTrouble::newStage()
@@ -230,6 +233,8 @@ void AvoidTrouble::update()
             if (_player->checkVictoryDoor(_victoryDoor))
                 newStage();
             _safezone->checkCollision(_obstacles, _obstacleSize);
+            _safezone->setSafeStuckDelayTime(60);
+            _safezone->updateSafeStuck(_player);
 
             for (int i = 0; i < _obstacleSize; i++)
                 _obstacles[i].update();

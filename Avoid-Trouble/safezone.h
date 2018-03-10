@@ -16,6 +16,7 @@
 #include <QPolygon>
 
 #include "defines.h"
+#include "player.h"
 #include "obstacle.h"
 
 class Safezone : public QRect
@@ -28,6 +29,9 @@ public:
 
     void        checkCollision(Obstacle * obstacles, int obstacleSize);
 
+    void        updateSafeStuck(Player * player);
+    void        setSafeStuckDelayTime(int time)     { _safeStuckDelay = time; }
+
     QPolygon    getLeftPol()    const   { return *_leftPolygon; }
     QPolygon    getTopPol()     const   { return *_topPolygon; }
     QPolygon    getRightPol()   const   { return *_rightPolygon; }
@@ -35,6 +39,7 @@ public:
 
 private:
     int         _velocity;
+    int         _safeStuckDelay;
     QPolygon*   _leftPolygon;
     QPolygon*   _topPolygon;
     QPolygon*   _rightPolygon;

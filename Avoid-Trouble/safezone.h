@@ -19,6 +19,7 @@
 #include "player.h"
 #include "obstacle.h"
 
+class Player;
 class Safezone : public QRect
 {
 public:

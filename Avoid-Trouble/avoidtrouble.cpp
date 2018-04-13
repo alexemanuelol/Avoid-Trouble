@@ -10,6 +10,7 @@
 
 #include "avoidtrouble.h"
 #include "ui_avoidtrouble.h"
+#include <time.h>
 
 AvoidTrouble::AvoidTrouble(QWidget *parent) : QMainWindow(parent), ui(new Ui::AvoidTrouble)
 {

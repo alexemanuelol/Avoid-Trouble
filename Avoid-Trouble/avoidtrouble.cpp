@@ -233,9 +233,9 @@ void AvoidTrouble::update()
             movePlayer();
             if (_player->checkVictoryDoor(_victoryDoor))
                 newStage();
-            _safezone->checkCollision(_obstacles, _obstacleSize);
-            _safezone->setSafeStuckDelayTime(60);
-            _safezone->updateSafeStuck(_player);
+            //_safezone->checkCollision(_obstacles, _obstacleSize);
+            //_safezone->setSafeStuckDelayTime(60);
+            //_safezone->updateSafeStuck(_player);
 
             for (int i = 0; i < _obstacleSize; i++)
                 _obstacles[i].update();

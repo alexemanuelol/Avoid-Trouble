@@ -169,7 +169,8 @@ void AvoidTrouble::keyReleaseEvent(QKeyEvent* event)
 
 void AvoidTrouble::movePlayer()
 {
-    if (!_player->getSafeStuck())
+    //if (!_player->getSafeStuck())
+    if (true)
     {
         if (_keyUp && _keyLeft)
         {

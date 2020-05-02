@@ -27,12 +27,15 @@ public:
 
     void    paint(QPainter & painter) const;
 
-    void    checkSafe(Safezone* safezone);
+    void    updateSafe(Safezone* safezone);
     bool    checkCollision(Obstacle * obstacles, int obstacleSize);
     bool    checkVictoryDoor(QRect * victoryDoor);
 
     void    setVel(int velocity)            { _velocity = velocity; }
     int     getVel()                        { return _velocity; }
+
+    void 	setSafe(bool isSafe)			{ _isSafe = isSafe; }
+    bool	getSafe()						{ return _isSafe; }
 
     void    setSafeStuck(bool safeStuck)    { _isSafeStuck = safeStuck; }
     bool    getSafeStuck()                  { return _isSafeStuck; }

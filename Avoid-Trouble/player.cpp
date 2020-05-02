@@ -26,7 +26,7 @@ void Player::paint(QPainter & painter) const
     painter.fillRect(*this, Qt::white);
 }
 
-void Player::checkSafe(Safezone* safezone)
+void Player::updateSafe(Safezone* safezone)
 {
     /* Check if player is inside safezone */
     if (safezone->contains(topLeft()) &&

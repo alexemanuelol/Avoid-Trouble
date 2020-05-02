@@ -58,7 +58,7 @@ private:
     bool _isPaused      = false;
 
     int _stage          = 1;
-    int _obstacleSize   = 1;
+    int _obstacleSize   = INITIAL_OBSTACLES_AMOUNT;
 
     bool _keyUp         = false;
     bool _keyLeft       = false;

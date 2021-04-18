@@ -5,13 +5,15 @@
 #define APP_NAME						"Avoid Trouble"
 #define WINDOW_WIDTH                    800
 #define WINDOW_HEIGHT                   600
-#define UPDATE_FREQUENCY_MS				16
+#define UPDATE_FREQUENCY_MS				16//2
 #define INITIAL_OBSTACLES_AMOUNT        1
+#define MAX_VELOCITY                    10
+#define MIN_VELOCITY                    1
 
 /* player */
 #define PLAYER_WIDTH                    20
 #define PLAYER_HEIGHT                   20
-#define PLAYER_VELOCITY                 4 //765
+#define PLAYER_VELOCITY                 4//765
 
 /* victory door */
 #define VICTORY_DOOR_WIDTH              10
@@ -24,8 +26,8 @@
 /* obstacle */
 #define OBSTACLE_WIDTH                  10
 #define OBSTACLE_HEIGHT                 10
-#define OBSTACLE_MAX_VEL                5
-#define OBSTACLE_MIN_VEL                1
+#define OBSTACLE_MAX_VEL                MAX_VELOCITY
+#define OBSTACLE_MIN_VEL                MIN_VELOCITY
 #define OBSTACLE_CHANGE_DIR_DELAY       15
 
 #endif // DEFINES_H

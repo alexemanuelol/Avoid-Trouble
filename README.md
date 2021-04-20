@@ -1,17 +1,17 @@
-# Game-Testing
-## Purpose of the project
-To learn more about C++ and QT Creator.
+# Avoid Trouble
+
+## Goal
+
+Achieve the highest stage among your friends!
 
 ## How to play
-- The goal is basically to advance to the next stage by entering the "victory door" to the far right.
-- You start off in the so called safezone where no obstacles can kill you.
-- The obstacles is only dangerous once the player is outside of the safezone.
-- Challenge yourself by beating your personal highest stage or challenge a friend.
+- You start from the 'safezone' which is located on the left side, where no balls can kill you.
+- Your goal is to reach the green zone which is the 'victory door', without colliding with the obstacle balls!
+- When you reach the 'victory door' you advance to the next stage where another obstacle ball is added.
 
-### Key-Binds
-- Use 'W', 'A', 'S' and 'D' to move the player
-- Press 'R' to restart the game
-- Press 'P' to pause the game
+### Controls
 
-# TODO:
-- Fix safezone delay at start so that the player dont get killed instantly when entering the next stage
+- You can use either `W`, `A`, `S`, `D` or the arrow keys to move the player.
+- Press `P` to pause the game.
+- Press `R` to restart the game.
+- Press `ESC` to exit the game.

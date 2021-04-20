@@ -14,14 +14,11 @@
  */
 
 #include "avoidtrouble.h"
-#include "ui_avoidtrouble.h"
 #include <time.h>
 #include <QString>
 
-AvoidTrouble::AvoidTrouble(QWidget *parent) : QMainWindow(parent), ui(new Ui::AvoidTrouble)
+AvoidTrouble::AvoidTrouble(QWidget *parent) : QMainWindow(parent)
 {
-    ui->setupUi(this);
-
     srand(time(NULL));
 
     /* Window initial settings */

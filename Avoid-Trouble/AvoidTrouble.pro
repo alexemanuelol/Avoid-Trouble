@@ -26,8 +26,6 @@ HEADERS     +=  defines.h\
                 obstacle.h\
                 avoidtrouble.h
 
-FORMS       +=  avoidtrouble.ui
-
 RESOURCES   +=  res.qrc
 
 RC_ICONS    =   images/icon.ico

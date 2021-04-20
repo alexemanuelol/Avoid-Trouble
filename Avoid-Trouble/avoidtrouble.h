@@ -27,11 +27,6 @@
 #include "player.h"
 #include "obstacle.h"
 
-namespace Ui
-{
-class AvoidTrouble;
-}
-
 class AvoidTrouble : public QMainWindow
 {
     Q_OBJECT
@@ -52,7 +47,7 @@ private slots:
     void resetStuckTimer();
 
 private:
-    Ui::AvoidTrouble* ui;
+    AvoidTrouble* ui;
     QRect* _safezone;
     Player* _player;
     QRect* _victoryDoor;

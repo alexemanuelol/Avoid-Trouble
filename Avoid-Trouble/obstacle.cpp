@@ -17,24 +17,26 @@
 
 Obstacle::Obstacle() : QRect()
 {
+    int spawnBorder = 10;
+
     /* Set color of the obstacle */
     _color = new QColor(100, (unsigned char) rand(), (unsigned char) rand());
 
-    /* Set a random starting position and random velocity */
-    setX(rand() % ((WINDOW_WIDTH - OBSTACLE_WIDTH) - 100 + 1) + 100);
-    setY(rand() % ((WINDOW_HEIGHT - OBSTACLE_HEIGHT) - 0 + 1) + 0);
+    /* Set a random starting position */
+    setX(SAFE_ZONE_WIDTH + spawnBorder + (rand() % ((APP_WIDTH - spawnBorder) - SAFE_ZONE_WIDTH + spawnBorder + 1)));
+    setY(spawnBorder + (rand() % ((APP_HEIGHT - spawnBorder) - spawnBorder + 1)));
 
-    _vx = rand() % (OBSTACLE_MAX_VEL - OBSTACLE_MIN_VEL + 1) + OBSTACLE_MIN_VEL;
-    _vy = rand() % (OBSTACLE_MAX_VEL - OBSTACLE_MIN_VEL + 1) + OBSTACLE_MIN_VEL;
+    /* Set random speed */
+    _speedDivX = OBS_MIN_SPEED + (rand() % (OBS_MAX_SPEED - OBS_MIN_SPEED + 1));
+    _speedDivY = OBS_MIN_SPEED + (rand() % (OBS_MAX_SPEED - OBS_MIN_SPEED + 1));
 
     /* Randomize the direction ( positive or negative velocity) */
-    if (rand() % 2)
-        _vx *= -1;
-    if (rand() % 2)
-        _vy *= -1;
+    _dirX = (rand() % 2) ? 1 : -1;
+    _dirY = (rand() % 2) ? 1 : -1;
 
-    setWidth(OBSTACLE_WIDTH);
-    setHeight(OBSTACLE_HEIGHT);
+    /* Set size */
+    setWidth(OBS_WIDTH);
+    setHeight(OBS_HEIGHT);
 }
 
 Obstacle::~Obstacle()
@@ -42,51 +44,55 @@ Obstacle::~Obstacle()
     delete _color;
 }
 
+void Obstacle::paint(QPainter & painter) const
+{
+    painter.fillRect(*this, *_color);
+}
+
 void Obstacle::update()
 {
-    /* Delay to avoid fast change in direction */
-    /*if (!_readyToChangeDir)
-        _changeDirDelay++;
-    if (_changeDirDelay == OBSTACLE_CHANGE_DIR_DELAY)
-    {
-        _changeDirDelay = 0;
-        _readyToChangeDir = true;
-    }*/
-
     /* Move the obstacle */
-    if (_vxCounter == _vx)
+    if (_speedDivCounterX == _speedDivX)
     {
-        moveLeft(x() + 1);
-        _vxCounter = 1;
+        _speedDivCounterX = 0;
+        moveLeft(x() + _dirX);
     }
     else
     {
-        _vxCounter += 1;
+        _speedDivCounterX += 1;
     }
 
-    if (_vyCounter == _vy)
+    if (_speedDivCounterY == _speedDivY)
     {
-        moveTop(y() + 1);
-        _vyCounter = 1;
+        _speedDivCounterY = 0;
+        moveTop(y() + _dirY);
     }
     else
     {
-        _vyCounter += 1;
+        _speedDivCounterY += 1;
     }
 
     /* Wall collision bounce */
-    if (center().y() <= 0)
-        changeYVel();
-    if (center().x() <= 0)
-        changeXVel();
-    if (center().y() >= WINDOW_HEIGHT)
-        changeYVel();
-    if (center().x() >= WINDOW_WIDTH)
-        changeXVel();
+    if (topLeft().y() < 0)
+    {
+        changeDirY();
+        moveTop(y() + (_dirY * 2));
+    }
+    else if (bottomRight().y() > APP_HEIGHT)
+    {
+        changeDirY();
+        moveTop(y() + (_dirY * 2));
+    }
+
+    if (topLeft().x() < SAFE_ZONE_WIDTH)
+    {
+        changeDirX();
+        moveLeft(x() + (_dirX * 2));
+    }
+    else if (bottomRight().x() > APP_WIDTH)
+    {
+        changeDirX();
+        moveLeft(x() + (_dirX * 2));
+    }
 }
 
-void Obstacle::paint(QPainter & painter) const
-{
-    /* Paint the obstacle */
-    painter.fillRect(*this, *_color);
-}

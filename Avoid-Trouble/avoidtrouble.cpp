@@ -16,6 +16,7 @@
 #include "avoidtrouble.h"
 #include "ui_avoidtrouble.h"
 #include <time.h>
+#include <QString>
 
 AvoidTrouble::AvoidTrouble(QWidget *parent) : QMainWindow(parent), ui(new Ui::AvoidTrouble)
 {
@@ -25,25 +26,18 @@ AvoidTrouble::AvoidTrouble(QWidget *parent) : QMainWindow(parent), ui(new Ui::Av
 
     /* Window initial settings */
     setWindowTitle(APP_NAME);
-    setFixedWidth(WINDOW_WIDTH);
-    setFixedHeight(WINDOW_HEIGHT);
+    setFixedWidth(APP_WIDTH);
+    setFixedHeight(APP_HEIGHT);
 
     /* Initialize Safezone */
-    _safezone = new Safezone(0,
-                             (WINDOW_HEIGHT/2) - (SAFE_ZONE_HEIGHT/2),
-                             SAFE_ZONE_WIDTH,
-                             SAFE_ZONE_HEIGHT);
+    //_safezone = new Safezone(0, (APP_HEIGHT/2) - (SAFE_ZONE_HEIGHT/2), SAFE_ZONE_WIDTH, SAFE_ZONE_HEIGHT);
+    _safezone = new QRect(0, (APP_HEIGHT/2) - (SAFE_ZONE_HEIGHT/2), SAFE_ZONE_WIDTH, SAFE_ZONE_HEIGHT);
 
     /* Initialize Player */
-    _player = new Player((SAFE_ZONE_WIDTH/2) - (PLAYER_WIDTH/2),
-                         (WINDOW_HEIGHT/2) - (PLAYER_HEIGHT/2),
-                         PLAYER_VELOCITY);
+    _player = new Player((SAFE_ZONE_WIDTH/2) - (PLAYER_WIDTH/2), (APP_HEIGHT/2) - (PLAYER_HEIGHT/2), PLAYER_SPEED);
 
     /* Initialize Victory door */
-    _victoryDoor = new QRect(WINDOW_WIDTH - VICTORY_DOOR_WIDTH,
-                             (WINDOW_HEIGHT/2) - (VICTORY_DOOR_HEIGHT/2),
-                             VICTORY_DOOR_WIDTH,
-                             VICTORY_DOOR_HEIGHT);
+    _victoryDoor = new QRect(APP_WIDTH - VICTORY_DOOR_WIDTH, (APP_HEIGHT/2) - (VICTORY_DOOR_HEIGHT/2), VICTORY_DOOR_WIDTH, VICTORY_DOOR_HEIGHT);
 
     /* Initialize Obstacle array */
     _obstacles = new Obstacle[_obstacleSize];
@@ -51,7 +45,14 @@ AvoidTrouble::AvoidTrouble(QWidget *parent) : QMainWindow(parent), ui(new Ui::Av
     /* Main game timer */
     _gameTimer = new QTimer(this);
     connect(_gameTimer, SIGNAL(timeout()), this, SLOT(update()));
-    _gameTimer->start(UPDATE_FREQUENCY_MS);
+    _gameTimer->start(UPD_FREQ_MS);
+
+    /* Stuck timer */
+    _stuckTimer = new QTimer(this);
+    connect(_stuckTimer, SIGNAL(timeout()), this, SLOT(resetStuckTimer()));
+    _stuckTimer->setSingleShot(true);
+
+    increaseStage();
 }
 
 AvoidTrouble::~AvoidTrouble()
@@ -71,211 +72,113 @@ void AvoidTrouble::paintEvent(QPaintEvent* event)
     QPainter painter(this);
     painter.setPen(QPen(Qt::white));
 
-    /* Paint the background */
-    painter.fillRect(0, 0, WINDOW_WIDTH, WINDOW_HEIGHT, Qt::black);
+    painter.fillRect(0, 0, APP_WIDTH, APP_HEIGHT, Qt::black);   /* Paint the background */
 
     if (_gameActive)
     {
-        /* Paint the safe zone */
-        _safezone->paint(painter);
+        if (_player->getStuck())                                /* Paint the safe zone */
+        {
+            painter.fillRect(*_safezone, Qt::darkRed);
+        }
+        else
+        {
+            painter.fillRect(*_safezone, Qt::red);
+        }
 
-        /* Paint the victory door */
-        painter.fillRect(*_victoryDoor,Qt::green);
-
-        /* Paint the player */
-        _player->paint(painter);
-
-        /* Paint the obstacles */
-        for (int i = 0; i < _obstacleSize; i++)
+        painter.fillRect(*_victoryDoor,Qt::green);              /* Paint the victory door */
+        _player->paint(painter);                                /* Paint the player */
+        for (int i = 0; i < _obstacleSize; i++)                 /* Paint the obstacles */
             _obstacles[i].paint(painter);
 
         /* Paint stage number */
         painter.setFont(QFont("Arial", 16, QFont::Bold));
-        painter.drawText(WINDOW_WIDTH/2 - 45, 25, QString("Stage: ") + QString::number(_stage));
+        painter.drawText(APP_WIDTH/2 - 45, 25, QString("Stage: ") + QString::number(_stage));
 
         if (_isPaused)
         {
             painter.setFont(QFont("Arial", 40, QFont::Bold));
-            painter.drawText(WINDOW_WIDTH/2 - 80, WINDOW_HEIGHT/2, QString("PAUSE"));
-        }
-        if (_player->getSafe() == true)
-        {
-            painter.setFont(QFont("Arial", 40, QFont::Bold));
-            painter.drawText(WINDOW_WIDTH/2 - 80, WINDOW_HEIGHT/2, QString("1"));
-        }
-        else
-        {
-            painter.setFont(QFont("Arial", 40, QFont::Bold));
-            painter.drawText(WINDOW_WIDTH/2 - 80, WINDOW_HEIGHT/2, QString("0"));
+            painter.drawText(APP_WIDTH/2 - 80, APP_HEIGHT/2, QString("PAUSE"));
         }
     }
     else
     {
         /* Paint Game Over */
         painter.setFont(QFont("Arial", 40, QFont::Bold));
-        painter.drawText(WINDOW_WIDTH/2 - 170, WINDOW_HEIGHT/2, QString("GAME OVER!"));
+        painter.drawText(APP_WIDTH/2 - 170, APP_HEIGHT/2, QString("GAME OVER!"));
         painter.setFont(QFont("Arial", 25, QFont::Bold));
-        painter.drawText(WINDOW_WIDTH/2 - 140,
-                         WINDOW_HEIGHT/2 + 50,
+        painter.drawText(APP_WIDTH/2 - 140,
+                         APP_HEIGHT/2 + 50,
                          QString("You got to stage ") + QString::number(_stage));
     }
 }
 
 void AvoidTrouble::keyPressEvent(QKeyEvent* event)
 {
+    /* Update player key movement (key pressed) */
+    _player->updateKeyStates(event->key(), true);
+
     /* Check key press */
     switch (event->key())
     {
-    case Qt::Key_Up:
-    case Qt::Key_W:
-        _keyUp = true;
+    case Qt::Key_P:                     /* Pause */
+        _isPaused = !_isPaused;
         break;
-
-    case Qt::Key_Left:
-    case Qt::Key_A:
-        _keyLeft = true;
+    case Qt::Key_R:                     /* Restart */
+        _stage = _obstacleSize = 0;
+        increaseStage();
+        _gameActive = true;
+        _isPaused = false;
         break;
-
-    case Qt::Key_Down:
-    case Qt::Key_S:
-        _keyDown = true;
+    case Qt::Key_Escape:                /* Exit */
+        close();
         break;
-
-    case Qt::Key_Right:
-    case Qt::Key_D:
-        _keyRight = true;
-        break;
-
     default:
-        if (event->key() == Qt::Key_P)              /* Pause */
-        {
-            _isPaused = !_isPaused;
-        }
-        else if (event->key() == Qt::Key_R)         /* Restart */
-        {
-            _stage = 0;
-            newStage();
-            _obstacleSize = INITIAL_OBSTACLES_AMOUNT;
-            _gameActive = true;
-            _isPaused = false;
-        }
-        else if (event->key() == Qt::Key_Escape)    /* Exit game */
-        {
-            this->close();
-        }
         break;
     }
 }
 
 void AvoidTrouble::keyReleaseEvent(QKeyEvent* event)
 {
-    /* Check player movement, key release */
-    switch (event->key())
-    {
-    case Qt::Key_Up:
-    case Qt::Key_W:
-        _keyUp = false;
-        break;
-
-    case Qt::Key_Left:
-    case Qt::Key_A:
-        _keyLeft = false;
-        break;
-
-    case Qt::Key_Down:
-    case Qt::Key_S:
-        _keyDown = false;
-        break;
-
-    case Qt::Key_Right:
-    case Qt::Key_D:
-        _keyRight = false;
-        break;
-    }
+    /* Update player key movement (key released) */
+    _player->updateKeyStates(event->key(), false);
 }
 
-void AvoidTrouble::movePlayer()
+void AvoidTrouble::increaseStage()
 {
-    //if (!_player->getSafeStuck())
-    if (true)
-    {
-        /* Move "North west" */
-        if (_keyUp && _keyLeft)
-        {
-            if (_player->y() > 0)
-                _player->moveTop(_player->y() - _player->getVel());
-            if (_player->x() > 0)
-                _player->moveLeft(_player->x() - _player->getVel());
-        }
-        /* Move "North east" */
-        else if (_keyUp && _keyRight)
-        {
-            if (_player->y() > 0)
-                _player->moveTop(_player->y() - _player->getVel());
-            if (_player->x() < (WINDOW_WIDTH - PLAYER_WIDTH))
-                _player->moveLeft(_player->x() + _player->getVel());
-        }
-        /* Move "South west" */
-        else if (_keyDown && _keyLeft)
-        {
-            if (_player->y() < (WINDOW_HEIGHT - PLAYER_HEIGHT))
-                _player->moveTop(_player->y() + _player->getVel());
-            if (_player->x() > 0)
-                _player->moveLeft(_player->x() - _player->getVel());
-        }
-        /* Move "South east" */
-        else if (_keyDown && _keyRight)
-        {
-            if (_player->y() < (WINDOW_HEIGHT - PLAYER_HEIGHT))
-                _player->moveTop(_player->y() + _player->getVel());
-            if (_player->x() < (WINDOW_WIDTH - PLAYER_WIDTH))
-                _player->moveLeft(_player->x() + _player->getVel());
-        }
-        /* Move "North" */
-        else if (_keyUp && _player->y() > 0)
-            _player->moveTop(_player->y() - _player->getVel());
-        /* Move "West" */
-        else if (_keyLeft && _player->x() > 0)
-            _player->moveLeft(_player->x() - _player->getVel());
-        /* Move "South" */
-        else if (_keyDown && _player->y() < (WINDOW_HEIGHT - PLAYER_HEIGHT))
-            _player->moveTop(_player->y() + _player->getVel());
-        /* Move "East" */
-        else if (_keyRight && _player->x() < (WINDOW_WIDTH - PLAYER_WIDTH))
-            _player->moveLeft(_player->x() + _player->getVel());
-    }
-}
-
-void AvoidTrouble::newStage()
-{
-    _player->moveLeft((SAFE_ZONE_WIDTH/2) - (PLAYER_WIDTH/2));
-    _player->moveTop((WINDOW_HEIGHT/2) - (PLAYER_HEIGHT/2));
+    _player->moveLeft(PLAYER_START_POS_X);
+    _player->moveTop(PLAYER_START_POS_Y);
     _stage++;
-    _obstacleSize = _obstacleSize + 1;
+    _obstacleSize++;
     delete[] _obstacles;
     _obstacles = new Obstacle[_obstacleSize];
+    startStuckTimer();
 }
 
-/* SLOTS FUNCTIONS */
-/* Main game updater */
+void AvoidTrouble::startStuckTimer()
+{
+    _player->setStuck(true);
+    _stuckTimer->start(PLAYER_STUCK);
+}
+
 void AvoidTrouble::update()
 {
     if (_gameActive)
     {
         if (!_isPaused)
         {
-            _player->updateSafe(_safezone);
-            _gameActive = _player->checkCollision(_obstacles, _obstacleSize);
-            movePlayer();
-            if (_player->checkVictoryDoor(_victoryDoor))
-                newStage();
-            _safezone->checkCollision(_obstacles, _obstacleSize);
-            //_safezone->setSafeStuckDelayTime(60);
-            //_safezone->updateSafeStuck(_player);
+            _gameActive = _player->update(_safezone, _obstacles, _obstacleSize);
+
+            if (_player->checkInsideVictoryDoor(_victoryDoor))
+                increaseStage();
 
             for (int i = 0; i < _obstacleSize; i++)
                 _obstacles[i].update();
         }
         repaint();
     }
+}
+
+void AvoidTrouble::resetStuckTimer()
+{
+    _player->setStuck(false);
 }

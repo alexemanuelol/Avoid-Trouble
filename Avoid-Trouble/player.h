@@ -18,9 +18,9 @@
 
 #include <QPainter>
 #include <QRect>
+#include <QKeyEvent>
 
 #include "defines.h"
-#include "safezone.h"
 #include "obstacle.h"
 
 class Safezone;
@@ -30,25 +30,32 @@ public:
     Player(int x, int y, int velocity);
     ~Player();
 
-    void    paint(QPainter & painter) const;
+    void paint(QPainter & painter) const;
 
-    void    updateSafe(Safezone* safezone);
-    bool    checkCollision(Obstacle * obstacles, int obstacleSize);
-    bool    checkVictoryDoor(QRect * victoryDoor);
+    bool update(QRect* safezone, Obstacle* obstacles, int obstacleSize);
+    void updateKeyStates(int key, bool value);
+    void updateSafe(QRect* safezone);
+    void updatePos();
 
-    void    setVel(int velocity)            { _velocity = velocity; }
-    int     getVel()                        { return _velocity; }
+    bool checkCollision(Obstacle * obstacles, int obstacleSize);
+    bool checkInsideVictoryDoor(QRect * victoryDoor);
 
-    void 	setSafe(bool isSafe)			{ _isSafe = isSafe; }
-    bool	getSafe()						{ return _isSafe; }
+    bool getSafe()              { return _isSafe; }
+    void setSafe(bool isSafe)   { _isSafe = isSafe; }
 
-    void    setSafeStuck(bool safeStuck)    { _isSafeStuck = safeStuck; }
-    bool    getSafeStuck()                  { return _isSafeStuck; }
+    bool getStuck()             { return _isStuck; }
+    void setStuck(bool isStuck) { _isStuck = isStuck; }
 
 private:
-    int     _velocity;
-    bool    _isSafe;
-    bool    _isSafeStuck;
+    int _speedDiv;
+    int _speedDivCounter = 0;
+    bool _isSafe;
+    bool _isStuck;
+
+    bool _keyUp = false;
+    bool _keyLeft = false;
+    bool _keyDown = false;
+    bool _keyRight = false;
 };
 
-#endif // PLAYER_H
+#endif /* PLAYER_H */

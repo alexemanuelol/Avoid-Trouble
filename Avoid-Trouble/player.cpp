@@ -15,23 +15,58 @@
 
 #include "player.h"
 
-Player::Player(int x, int y, int velocity) : QRect(x, y, PLAYER_WIDTH, PLAYER_HEIGHT)
+Player::Player(int x, int y, int speedDiv) : QRect(x, y, PLAYER_WIDTH, PLAYER_HEIGHT)
 {
-    _velocity = velocity;
+    _speedDiv = MAX_SPEED - speedDiv;
 }
 
 Player::~Player()
 {
-    /* Delete */
 }
 
 void Player::paint(QPainter & painter) const
 {
-    /* Paint the player */
-    painter.fillRect(*this, Qt::white);
+    painter.fillRect(*this, Qt::white);                         /* Paint the player */
 }
 
-void Player::updateSafe(Safezone* safezone)
+bool Player::update(QRect* safezone, Obstacle* obstacles, int obstacleSize)
+{
+    bool gameActive;
+
+    updateSafe(safezone);                                       /* Update if player is in safezone */
+    gameActive = checkCollision(obstacles, obstacleSize);       /* Check collision with obstacles */
+    updatePos();                                                /* Update player position */
+
+    return gameActive;
+}
+
+void Player::updateKeyStates(int key, bool value)
+{
+    /* Check key press */
+    switch (key)
+    {
+    case Qt::Key_Up:
+    case Qt::Key_W:
+        _keyUp = value;
+        break;
+    case Qt::Key_Left:
+    case Qt::Key_A:
+        _keyLeft = value;
+        break;
+    case Qt::Key_Down:
+    case Qt::Key_S:
+        _keyDown = value;
+        break;
+    case Qt::Key_Right:
+    case Qt::Key_D:
+        _keyRight = value;
+        break;
+    default:
+        break;
+    }
+}
+
+void Player::updateSafe(QRect* safezone)
 {
     /* Check if player is inside safezone */
     if (safezone->contains(topLeft()) &&
@@ -41,6 +76,84 @@ void Player::updateSafe(Safezone* safezone)
         _isSafe = true;
     else
         _isSafe = false;
+}
+
+void Player::updatePos()
+{
+    if (_speedDivCounter != _speedDiv)
+    {
+        _speedDivCounter++;
+        return;
+    }
+
+    if (_isStuck)
+    {
+        _speedDivCounter = 0;
+        return;
+    }
+
+    if (_keyUp && _keyLeft)                                     /* Move "North west" */
+    {
+        if (x() > 0)
+        {
+            moveLeft(x() - 1);
+        }
+        if (y() > 0)
+        {
+            moveTop(y() - 1);
+        }
+    }
+    else if (_keyUp && _keyRight)                               /* Move "North east" */
+    {
+        if (x() < (APP_WIDTH - PLAYER_WIDTH))
+        {
+            moveLeft(x() + 1);
+        }
+        if (y() > 0)
+        {
+            moveTop(y() - 1);
+        }
+    }
+    else if (_keyDown && _keyLeft)                              /* Move "South west" */
+    {
+        if (x() > 0)
+        {
+            moveLeft(x() - 1);
+        }
+        if (y() < (APP_HEIGHT - PLAYER_HEIGHT))
+        {
+            moveTop(y() + 1);
+        }
+    }
+    else if (_keyDown && _keyRight)                             /* Move "South east" */
+    {
+        if (x() < (APP_WIDTH - PLAYER_WIDTH))
+        {
+            moveLeft(x() + 1);
+        }
+        if (y() < (APP_HEIGHT - PLAYER_HEIGHT))
+        {
+            moveTop(y() + 1);
+        }
+    }
+    else if (_keyUp && y() > 0)                                 /* Move "North" */
+    {
+        moveTop(y() - 1);
+    }
+    else if (_keyLeft && x() > 0)                               /* Move "West" */
+    {
+        moveLeft(x() - 1);
+    }
+    else if (_keyDown && y() < (APP_HEIGHT - PLAYER_HEIGHT))    /* Move "South" */
+    {
+        moveTop(y() + 1);
+    }
+    else if (_keyRight && x() < (APP_WIDTH - PLAYER_WIDTH))     /* Move "East" */
+    {
+        moveLeft(x() + 1);
+    }
+
+    _speedDivCounter = 0;
 }
 
 bool Player::checkCollision(Obstacle * obstacles, int obstacleSize)
@@ -58,11 +171,13 @@ bool Player::checkCollision(Obstacle * obstacles, int obstacleSize)
     return true;
 }
 
-bool Player::checkVictoryDoor(QRect * victoryDoor)
+bool Player::checkInsideVictoryDoor(QRect * victoryDoor)
 {
     /* Check if player has reached the victory door */
     if (victoryDoor->contains(QPoint(x() + PLAYER_WIDTH/2, y() + PLAYER_HEIGHT/2)))
+    {
         return true;
-    else
-        return false;
+    }
+
+    return false;
 }

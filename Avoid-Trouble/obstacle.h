@@ -28,24 +28,21 @@ public:
     Obstacle();
     ~Obstacle();
 
-    void    paint(QPainter & painter) const;
-    void    update();
+    void paint(QPainter & painter) const;
 
-    void    setVelX(float vx)   { _vx = vx; }
-    void    setVelY(float vy)   { _vy = vy; }
+    void update();
 
-    float   getVelX()           { return _vx; }
-    float   getVelY()           { return _vy; }
-
-    void    changeXVel()        { _vx *= -1; }
-    void    changeYVel()        { _vy *= -1; }
+    void changeDirX() { _dirX *= -1; }
+    void changeDirY() { _dirY *= -1; }
 
 private:
-    QColor*     _color;
-    float       _vx, _vy;
-    float       _vxCounter = 1, _vyCounter = 1;
-    int         _changeDirDelay = 0;
-    bool        _readyToChangeDir = true;
+    QColor* _color;
+    float _speedDivX = 10;
+    float _speedDivY = 10;
+    float _speedDivCounterX = 0;
+    float _speedDivCounterY = 0;
+    int _dirX;
+    int _dirY;
 };
 
-#endif // OBSTACLE_H
+#endif /* OBSTACLE_H */

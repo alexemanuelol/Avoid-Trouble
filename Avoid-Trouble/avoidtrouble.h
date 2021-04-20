@@ -25,10 +25,10 @@
 
 #include "defines.h"
 #include "player.h"
-#include "safezone.h"
 #include "obstacle.h"
 
-namespace Ui {
+namespace Ui
+{
 class AvoidTrouble;
 }
 
@@ -40,35 +40,31 @@ public:
     explicit AvoidTrouble(QWidget *parent = 0);
     ~AvoidTrouble();
 
-    void    paintEvent(QPaintEvent * event);
-    void    keyPressEvent(QKeyEvent* event);
-    void    keyReleaseEvent(QKeyEvent* event);
+    void paintEvent(QPaintEvent * event);
+    void keyPressEvent(QKeyEvent* event);
+    void keyReleaseEvent(QKeyEvent* event);
 
-    void    movePlayer();
-    void    newStage();
+    void increaseStage();
+    void startStuckTimer();
 
 private slots:
-    void    update();
+    void update();
+    void resetStuckTimer();
 
 private:
-    Ui::AvoidTrouble*   ui;
-    Safezone*           _safezone;
-    Player*             _player;
-    QRect*              _victoryDoor;
-    Obstacle*           _obstacles;
-    QTimer*             _gameTimer;
+    Ui::AvoidTrouble* ui;
+    QRect* _safezone;
+    Player* _player;
+    QRect* _victoryDoor;
+    Obstacle* _obstacles;
+    QTimer* _gameTimer;
+    QTimer* _stuckTimer;
 
-    bool _gameActive    = true;
-    bool _isSafe        = true;
-    bool _isPaused      = false;
+    bool _gameActive = true;
+    bool _isPaused = false;
 
-    int _stage          = 1;
-    int _obstacleSize   = INITIAL_OBSTACLES_AMOUNT;
-
-    bool _keyUp         = false;
-    bool _keyLeft       = false;
-    bool _keyDown       = false;
-    bool _keyRight      = false;
+    int _stage = 0;
+    int _obstacleSize = START_OBS_NBR - 1;
 };
 
-#endif // AVOIDTROUBLE_H
+#endif /* AVOIDTROUBLE_H */

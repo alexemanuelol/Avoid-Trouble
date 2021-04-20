@@ -21,13 +21,11 @@ TEMPLATE    =   app
 SOURCES     +=  main.cpp\
                 player.cpp\
                 obstacle.cpp\
-                safezone.cpp \
                 avoidtrouble.cpp
 
 HEADERS     +=  defines.h\
                 player.h\
                 obstacle.h\
-                safezone.h \
                 avoidtrouble.h
 
 FORMS       +=  avoidtrouble.ui

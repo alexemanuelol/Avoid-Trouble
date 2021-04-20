@@ -18,17 +18,14 @@
 
 /* application */
 #define APP_NAME						"Avoid Trouble"
-#define WINDOW_WIDTH                    800
-#define WINDOW_HEIGHT                   600
-#define UPDATE_FREQUENCY_MS				16//2
-#define INITIAL_OBSTACLES_AMOUNT        1
-#define MAX_VELOCITY                    10
-#define MIN_VELOCITY                    1
+#define APP_WIDTH                       800
+#define APP_HEIGHT                      600
 
-/* player */
-#define PLAYER_WIDTH                    20
-#define PLAYER_HEIGHT                   20
-#define PLAYER_VELOCITY                 4//765
+/* General */
+#define MAX_SPEED                       20
+#define MIN_SPEED                       0
+#define START_OBS_NBR                   1
+#define UPD_FREQ_MS				        1
 
 /* victory door */
 #define VICTORY_DOOR_WIDTH              10
@@ -36,13 +33,21 @@
 
 /* safezone */
 #define SAFE_ZONE_WIDTH                 60
-#define SAFE_ZONE_HEIGHT                WINDOW_HEIGHT
+#define SAFE_ZONE_HEIGHT                APP_HEIGHT
 
 /* obstacle */
-#define OBSTACLE_WIDTH                  10
-#define OBSTACLE_HEIGHT                 10
-#define OBSTACLE_MAX_VEL                MAX_VELOCITY
-#define OBSTACLE_MIN_VEL                MIN_VELOCITY
-#define OBSTACLE_CHANGE_DIR_DELAY       15
+#define OBS_WIDTH                       10
+#define OBS_HEIGHT                      10
+#define OBS_MAX_SPEED                   MAX_SPEED
+#define OBS_MIN_SPEED                   MIN_SPEED
+#define OBS_CHANGE_DIR_DELAY            15
 
-#endif // DEFINES_H
+/* player */
+#define PLAYER_WIDTH                    20
+#define PLAYER_HEIGHT                   20
+#define PLAYER_SPEED                    18
+#define PLAYER_STUCK                    1000
+#define PLAYER_START_POS_X              ((SAFE_ZONE_WIDTH/2) - (PLAYER_WIDTH/2))
+#define PLAYER_START_POS_Y              ((APP_HEIGHT/2) - (PLAYER_HEIGHT/2))
+
+#endif /* DEFINES_H */

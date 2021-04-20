@@ -4,6 +4,8 @@
 
 Achieve the highest stage among your friends!
 
+![An image of stage 100 of avoid trouble](images/avoid-trouble.png)
+
 ## How to play
 - You start from the 'safezone' which is located on the left side, where no balls can kill you.
 - Your goal is to reach the green zone which is the 'victory door', without colliding with the obstacle balls!

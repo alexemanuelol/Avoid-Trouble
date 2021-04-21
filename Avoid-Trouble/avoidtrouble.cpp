@@ -121,7 +121,8 @@ void AvoidTrouble::keyPressEvent(QKeyEvent* event)
         _isPaused = !_isPaused;
         break;
     case Qt::Key_R:                     /* Restart */
-        _stage = _obstacleSize = 0;
+        _stage = 0;
+        _obstacleSize = START_OBS_NBR - 1;
         increaseStage();
         _gameActive = true;
         _isPaused = false;

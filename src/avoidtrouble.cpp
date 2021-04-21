@@ -25,6 +25,7 @@ AvoidTrouble::AvoidTrouble(QWidget *parent) : QMainWindow(parent)
     setWindowTitle(APP_NAME);
     setFixedWidth(APP_WIDTH);
     setFixedHeight(APP_HEIGHT);
+    setWindowIcon(QIcon(":/icon.ico"));
 
     /* Initialize Safezone */
     //_safezone = new Safezone(0, (APP_HEIGHT/2) - (SAFE_ZONE_HEIGHT/2), SAFE_ZONE_WIDTH, SAFE_ZONE_HEIGHT);
